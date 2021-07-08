@@ -7,7 +7,7 @@ class producto:
         self.dif=self.poriginal-self.poferta
         self.pors=round((self.dif*100)/self.poriginal,2)
     def printp(self):
-        print("\n-----------------------------\n"+
+        print("-----------------------------\n"+
         f"Categoría: {self.tofertas}\nNombre: {self.nombre}\nPrecio original: ${self.poriginal}\nPrecio oferta: ${self.poferta}\nDifrencia de precio: ${self.dif}\nPorcentaje de descuento: {self.pors}%")
         return "-----------------------------"
         

@@ -52,11 +52,11 @@ print("\nCantidad de categorías: ",len(scrap))
 
 print("\nCantidad de productos en la primera página de cada categoría:")
 for i in range(len(scrap)):
-    print(scrap[i][0].tofertas,len(scrap[i]))
+    print(f"{scrap[i][0].tofertas}: {len(scrap[i])}")
 
 
 for i in range(len(scrap)):
-    print("\nCategoría: ",f.print_ofertas_categoria(scrap)[0],"\nPocercentaje promedio de descuento: ",f.print_ofertas_categoria(scrap)[1])
+    print("\nCategoría: ",f.print_ofertas_categoria(scrap)[i][0],"\nPocercentaje promedio de descuento: ",f.print_ofertas_categoria(scrap)[i][1],"%")
 
 
 print("\nPromedio generál del procentaje de descuento",f.prom_ofertas_total(scrap))
