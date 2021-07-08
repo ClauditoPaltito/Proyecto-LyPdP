@@ -1,54 +1,75 @@
+import random
+from time import sleep
 from selenium import webdriver
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.chrome.options import Options
-import pandas as pd
-from os import path
-import time
+import poo as poo
+import funcional as f
 
-# options = Options()
-# options.add_argument("--headless")
-# options.add_argument("window-size=1400,800")
+def caambio(l):
+    p = l[2:len(l)]
+    if len(p) >= 5 and len(p) <= 7:
+        pr = l[2:len(l)-4]+l[len(l)-3:len(l)]
+    elif len(p) > 7 and len(p) <= 11:
+        pr = l[2:len(l)-8]+l[len(l)-7:len(l)-4]+l[len(l)-3:len(l)]
+    else:
+        pr=p
+    return(int(pr))
+
+def Scraping():
+    path = 'chromedriver.exe'
+    website = 'https://www.mercadolibre.cl'
+    driver = webdriver.Chrome(path)
+    driver.get(website)
+    driver.set_window_size(1920, 1080)
+    ofertas_button = driver.find_element_by_xpath('//a[@href="https://www.mercadolibre.cl/ofertas#nav-header"]')
+    ofertas_button.click()
+    sleep(random.uniform(0.5, 1.5))
+    Lista = []
+    for i in range(18):
+        if i == 6 or i == 12:
+            sig = driver.find_element_by_xpath('//button[@class="next-button "]')
+            sig.click()
+            sleep(random.uniform(0.5, 1.5))
+
+        sec = driver.find_element_by_xpath(f'//div[@data-index="{i}"]')
+        sec.click()
+        sleep(random.uniform(1, 2))
+        productos = driver.find_elements_by_xpath('//li[@class="promotion-item"]')
+        lista=[]
+        for product in productos:
+            precioOR = product.find_element_by_xpath('.//span[@class="promotion-item__oldprice"]').text
+            precioOF = product.find_element_by_xpath('.//div[@class="promotion-item__price-block"]/span[@class="promotion-item__price"]/span').text
+            titulo = product.find_element_by_xpath('.//p[@class="promotion-item__title"]').text
+            tof = driver.find_element_by_xpath('//div[@class="carousel_item selected"]').text
+            prod = poo.producto(titulo,caambio(precioOR),caambio(precioOF),tof)
+            lista.append(prod)
+        Lista.append(lista)
+    driver.quit()
+    return Lista
+
+scrap = Scraping()
+print("\nCantidad de categorías: ",len(scrap))
 
 
-# Temas: Localizar un boton, seleccionar elemento de listas desplegables y extraer datos de tabla
-
-# definer pagina a scrapear y ruta donde descargaste chromediver
-website = 'https://www.mercadolibre.cl/'
-path = 'chromedriver.exe'
+print("\nCantidad de productos en la primera página de cada categoría:")
+for i in range(len(scrap)):
+    print(scrap[i][0].tofertas,len(scrap[i]))
 
 
-# definer variable 'driver'
-driver = webdriver.Chrome(path)
+for i in range(len(scrap)):
+    print("\nCategoría: ",f.print_ofertas_categoria(scrap)[0],"\nPocercentaje promedio de descuento: ",f.print_ofertas_categoria(scrap)[1])
 
-# abrir Google Chrome mediante chromedriver
-driver.get(website)
 
-driver.set_window_size(1920, 1080)
-size = driver.get_window_size()
-print("Window size: width = {}px, height = {}px".format(size["width"], size["height"]))
+print("\nPromedio generál del procentaje de descuento",f.prom_ofertas_total(scrap))
 
-# localizar un botón
-ofertas_button = driver.find_element_by_xpath('//a[@href="https://www.mercadolibre.cl/ofertas#nav-header"]')
-# dar click en un botón
-ofertas_button.click()
 
-# # usar una sección como referencia para garantizar que vamos a encontrar el elemento que buscamos (util cuando no hay id y queremos evitar nombre de clases repetitivos)
-# caja = driver.find_element_by_class_name('panel-body')
-# # seleccionar dropdown y seleccionar por texto
-# dropdown = Select(caja.find_element_by_id('country'))
-# dropdown.select_by_visible_text('Spain')
-# # wait implicito (util cuando la página demora en cargar elemetos varios segundos y obtenemor el error "ElementNotVisibleException")
-# time.sleep(5)
-# # seleccionar elementos de la tabla
-# matches = driver.find_elements_by_css_selector('tr')
+list_ord = f.top_ofertas_listas(scrap)
+print("\nCaracterísticas de los productos con mayor porcentaje de descuento por categoría:")
+for i in range(len(list_ord)):
+    print(list_ord[i][-1].printp())
 
-# # almacenar en listar
-# partidos = [match.text for match in matches]
 
-# #cerrar Google Chrome abierto por chromedriver
-# driver.quit()
+list_list_ord=f.bestsort(list_ord)
+print("\nCaracterísticas del producto con el mayor porcentaje de descuento es:")
+print(list_list_ord[-1].printp())
 
-# # Bonus: Crea Dataframe en Pandas y exporta data en CSV (Excel)
-# df = pd.DataFrame({'goals': partidos})
-# print(df)
-# df.to_csv('tutorial.csv', index=False)
+###### TODOS LOS FOR PASARLOS A FUNCIONES ########
